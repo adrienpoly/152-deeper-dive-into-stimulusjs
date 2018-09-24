@@ -1,0 +1,55 @@
+<%= form_with(model: account, local: true) do |form| %>
+  <% if account.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(account.errors.count, "error") %> prohibited this account from being saved:</h2>
+
+      <ul>
+      <% account.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :name %>
+    <%= form.text_field :name %>
+  </div>
+
+  <div data-controller='city-selector'>
+    <%= form.label :state_id %>
+    <%= form.select :state_id,
+                    State.select_collection,
+                    { include_blank: true },
+                    {
+                      class: 'form-control',
+                      data: {
+                        target: 'city-selector.state_input',
+                        action: 'city-selector#state_changed'
+                      }
+                    }
+    %>
+
+    <%= form.label :county_id %>
+    <%= form.select :county_id, [], {}, { 
+                    class: 'form-control',
+                    data: {
+                      target: 'city-selector.county_input',
+                      action: 'city-selector#county_changed'
+                    }                                          
+                  } %>
+
+    <%= form.label :city_id %>
+    <%= form.select :city_id, [], {}, { class: 'form-control', 
+                    data: {
+                      target: 'city-selector.city_input',
+                      city_id: account&.city_id,
+                      county_id: account&.city&.county_id,
+                      state_id: account&.city&.county&.state_id
+                    } } %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit %>
+  </div>
+<% end %>
